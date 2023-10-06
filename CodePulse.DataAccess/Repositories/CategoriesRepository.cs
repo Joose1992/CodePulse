@@ -17,14 +17,14 @@ namespace CodePulse.DataAccess.Repositories
             _context = new ApplicationDbContext();
         }
 
-        public async Task<long> CreateCategory(CategoriesModel model)
+        public async Task<CategoriesModel> CreateCategory(CategoriesModel model)
         {
             await _context.Categories.AddAsync(model);
             await _context.SaveChangesAsync();
-            return model.Id;
+            return model;
         }
 
-        public async Task<long> UpdateCategory(CategoriesModel model)
+        public async Task<CategoriesModel> UpdateCategory(CategoriesModel model)
         {
             var category = _context.Categories.Find(model.Id);
             if (category != null)
@@ -33,17 +33,19 @@ namespace CodePulse.DataAccess.Repositories
                 category.UrlHandle = model.UrlHandle;
                 await _context.SaveChangesAsync();
             }
-            return model.Id;
+            return model;
         }
 
-        public async Task DeleteCategory(long categoryId)
+        public async Task<bool> DeleteCategory(long categoryId)
         {
             var category = _context.Categories.Find(categoryId);
             if (category != null)
             {
                 _context.Remove(category);
                 await _context.SaveChangesAsync();
+                return true;
             }
+            return false;
         }
 
         public async Task<List<CategoriesModel>> GetAllCategories()
@@ -53,7 +55,8 @@ namespace CodePulse.DataAccess.Repositories
 
         public async Task<CategoriesModel> GetCategoryById(long categoryId)
         {
-            return await _context.Categories.FindAsync(categoryId)!;
+              CategoriesModel result = await _context.Categories.FindAsync(categoryId)!;
+            return result!;
         }
 
     }

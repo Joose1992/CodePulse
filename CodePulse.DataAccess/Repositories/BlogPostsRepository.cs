@@ -1,5 +1,6 @@
 ﻿using CodePulse.DataAccess.Context;
 using CodePulse.DataAccess.Models;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,14 +17,14 @@ namespace CodePulse.DataAccess.Repositories
             _context = new ApplicationDbContext();
         }
         
-        public long CreateBlog(BlogPostsModel model)
+        public async Task<BlogPostsModel> CreateBlog(BlogPostsModel model)
         {
-            _context.BlogPosts.Add(model);
-            _context.SaveChanges();
-            return model.Id;
+            await _context.BlogPosts.AddAsync(model);
+            await _context.SaveChangesAsync();
+            return model;
         }
 
-        public long UpdateBlog(BlogPostsModel model)
+        public async Task<BlogPostsModel> UpdateBlog(BlogPostsModel model)
         {
             var blog = _context.BlogPosts.Find(model.Id);
             if(blog != null)
@@ -37,29 +38,29 @@ namespace CodePulse.DataAccess.Repositories
                 blog.Author = model.Author;
                 blog.IsVisible = model.IsVisible;
 
-                _context.SaveChanges();
+                await _context.SaveChangesAsync();
             }
-            return model.Id;
+            return model;
         }
 
-        public void DeleteBlog(long id)
+        public async Task DeleteBlog(long id)
         {
             var blog = _context.BlogPosts.Find(id);
             if(blog != null)
             {
                 _context.Remove(blog);
-                _context.SaveChanges();
+                await _context.SaveChangesAsync();
             }
         }
 
-        public List<BlogPostsModel> GetAllBlogs()
+        public async Task<List<BlogPostsModel>> GetAllBlogs()
         {
-            return _context.BlogPosts.ToList();
+            return await _context.BlogPosts.ToListAsync();
         }
 
-        public BlogPostsModel GetBlog(long id)
+        public async Task<BlogPostsModel> GetBlog(long id)
         {
-            return _context.BlogPosts.Find(id)!;
+            return await _context.BlogPosts.FindAsync(id)!;
         }
     }
 }
